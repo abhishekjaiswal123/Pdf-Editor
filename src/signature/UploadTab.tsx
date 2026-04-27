@@ -15,7 +15,9 @@ export function UploadTab({ onResult }: { onResult: (dataUrl: string) => void })
         ctx.drawImage(img, 0, 0);
         const id = ctx.getImageData(0, 0, c.width, c.height);
         const stripped = stripWhite(id.data, 235);
-        ctx.putImageData(new ImageData(stripped, c.width, c.height), 0, 0);
+        const newImageData = ctx.createImageData(c.width, c.height);
+        newImageData.data.set(stripped);
+        ctx.putImageData(newImageData, 0, 0);
         onResult(c.toDataURL('image/png'));
       }} />
     </div>

@@ -11,4 +11,4 @@ export default defineConfig({
     globals: true,
     passWithNoTests: true,
   },
-})
+} as any)

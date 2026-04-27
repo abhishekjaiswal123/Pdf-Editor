@@ -5,7 +5,7 @@ import { exportPdf } from '../src/export/exportPdf';
 async function blankPdfBytes(): Promise<ArrayBuffer> {
   const d = await PDFDocument.create();
   d.addPage([600, 800]);
-  return (await d.save()).buffer;
+  return (await d.save()).buffer as ArrayBuffer;
 }
 
 describe('exportPdf', () => {
