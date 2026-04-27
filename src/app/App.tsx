@@ -10,6 +10,8 @@ import { setPendingSignature, hasPendingSignature } from '../tools/handlers/sign
 import { useActiveTool } from '../tools/useActiveTool';
 import { FormFieldOverlay } from '../forms/FormFieldOverlay';
 import { exportPdf } from '../export/exportPdf';
+import { Sidebar } from '../ui/Sidebar';
+import { PropertiesPanel } from '../ui/PropertiesPanel';
 
 function PageView({ doc, pageIndex }: { doc: LoadedPdf; pageIndex: number }) {
   const [size, setSize] = useState({ w: 0, h: 0 });
@@ -85,12 +87,18 @@ export default function App() {
   return (
     <div className="flex flex-col h-full">
       <Toolbar onExport={onExport} />
-      {sigOpen && <SignatureModal onClose={() => setSigOpen(false)} onUse={(url) => setPendingSignature(url)} />}
-      <div className="flex-1 overflow-auto flex flex-col gap-4 items-center p-4">
-        {Array.from({ length: doc.numPages }).map((_, i) => (
-          <PageView key={i} doc={doc} pageIndex={i} />
-        ))}
+      <PropertiesPanel />
+      <div className="flex-1 flex overflow-hidden">
+        <Sidebar doc={doc} onJump={(i) => document.getElementById('page-' + i)?.scrollIntoView({ behavior: 'smooth' })} />
+        <div className="flex-1 overflow-auto flex flex-col gap-4 items-center p-4">
+          {Array.from({ length: doc.numPages }).map((_, i) => (
+            <div key={i} id={'page-' + i}>
+              <PageView doc={doc} pageIndex={i} />
+            </div>
+          ))}
+        </div>
       </div>
+      {sigOpen && <SignatureModal onClose={() => setSigOpen(false)} onUse={(url) => setPendingSignature(url)} />}
     </div>
   );
 }

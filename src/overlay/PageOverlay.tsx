@@ -1,5 +1,5 @@
 import { Stage, Layer } from 'react-konva';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import type Konva from 'konva';
 import { useDocStore } from '../store/docStore';
 import { useActiveTool } from '../tools/useActiveTool';
@@ -8,6 +8,7 @@ import { ImageNode } from './nodes/ImageNode';
 import { StrokeNode } from './nodes/StrokeNode';
 import { ShapeNode } from './nodes/ShapeNode';
 import { handlePointer } from '../tools/handlers';
+import { useSelection } from '../store/selectionStore';
 
 type Props = { pageIndex: number; width: number; height: number };
 
@@ -24,7 +25,8 @@ export function PageOverlay({ pageIndex, width, height }: Props) {
   // later if performance becomes an issue.
   const edits = useDocStore((s) => s.edits.filter((e) => e.pageIndex === pageIndex));
   const tool = useActiveTool((s) => s.tool);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const selectedId = useSelection((s) => s.id);
+  const setSelectedId = useSelection((s) => s.setId);
   const stageRef = useRef<Konva.Stage | null>(null);
 
   useEffect(() => {
