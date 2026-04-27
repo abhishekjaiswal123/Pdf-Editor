@@ -4,6 +4,7 @@ import { textDown } from './textHandler';
 import { penDown, penMove, penUp } from './penHandler';
 import { highlightDown, highlightMove, highlightUp } from './highlightHandler';
 import { rectDown, rectMove, rectUp } from './rectHandler';
+import { imageDown } from './imageHandler';
 
 export type Phase = 'down' | 'move' | 'up';
 export type Ctx = { tool: Tool; pageIndex: number };
@@ -26,4 +27,5 @@ export function handlePointer(phase: Phase, ev: Konva.KonvaEventObject<MouseEven
     if (phase === 'move') return rectMove(ev);
     if (phase === 'up') return rectUp();
   }
+  if (tool === 'image' && phase === 'down') return imageDown(ev, pageIndex);
 }
