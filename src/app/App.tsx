@@ -8,6 +8,7 @@ import { PageOverlay } from '../overlay/PageOverlay';
 import { SignatureModal } from '../signature/SignatureModal';
 import { setPendingSignature, hasPendingSignature } from '../tools/handlers/signatureHandler';
 import { useActiveTool } from '../tools/useActiveTool';
+import { FormFieldOverlay } from '../forms/FormFieldOverlay';
 
 function PageView({ doc, pageIndex }: { doc: LoadedPdf; pageIndex: number }) {
   const [size, setSize] = useState({ w: 0, h: 0 });
@@ -16,6 +17,7 @@ function PageView({ doc, pageIndex }: { doc: LoadedPdf; pageIndex: number }) {
       <PageCanvas doc={doc} pageIndex={pageIndex} scale={1.25}
         onSize={(w, h) => setSize({ w, h })} />
       {size.w > 0 && <PageOverlay pageIndex={pageIndex} width={size.w} height={size.h} />}
+      {size.w > 0 && <FormFieldOverlay pageIndex={pageIndex} scale={1.25} />}
     </div>
   );
 }
