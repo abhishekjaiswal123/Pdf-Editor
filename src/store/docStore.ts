@@ -13,6 +13,8 @@ type Actions = {
   setFormFill: (fill: FormFill) => void;
   undo: () => void;
   redo: () => void;
+  openFile: (file: File) => Promise<void>;
+  openExisting: (docId: string) => Promise<void>;
 };
 
 const initial: DocState = { docId: null, name: '', bytes: null, edits: [], formFills: [] };
@@ -56,4 +58,24 @@ export const useDocStore = create<DocState & Actions>((set, get) => ({
   }),
   undo: () => stack.undo(),
   redo: () => stack.redo(),
+  openFile: async (file: File) => {
+    const { putDocument } = await import('../persistence/documents');
+    const { getEdits } = await import('../persistence/edits');
+    const bytes = await file.arrayBuffer();
+    const docId = crypto.randomUUID();
+    await putDocument({ id: docId, name: file.name, originalBytes: bytes, lastOpened: Date.now() });
+    const existing = await getEdits(docId);
+    get().loadDoc({ docId, name: file.name, bytes, edits: existing?.edits ?? [], formFills: existing?.formFills ?? [] });
+  },
+  openExisting: async (docId: string) => {
+    const { getDocument } = await import('../persistence/documents');
+    const { getEdits } = await import('../persistence/edits');
+    const row = await getDocument(docId);
+    if (!row) return;
+    const existing = await getEdits(docId);
+    get().loadDoc({
+      docId, name: row.name, bytes: row.originalBytes,
+      edits: existing?.edits ?? [], formFills: existing?.formFills ?? [],
+    });
+  },
 }));
