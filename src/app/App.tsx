@@ -5,6 +5,9 @@ import { usePdfDocument, type LoadedPdf } from '../pdf/usePdfDocument';
 import { PageCanvas } from '../pdf/PageCanvas';
 import { Toolbar } from '../tools/Toolbar';
 import { PageOverlay } from '../overlay/PageOverlay';
+import { SignatureModal } from '../signature/SignatureModal';
+import { setPendingSignature, hasPendingSignature } from '../tools/handlers/signatureHandler';
+import { useActiveTool } from '../tools/useActiveTool';
 
 function PageView({ doc, pageIndex }: { doc: LoadedPdf; pageIndex: number }) {
   const [size, setSize] = useState({ w: 0, h: 0 });
@@ -22,6 +25,8 @@ export default function App() {
   const doc = usePdfDocument(bytes);
   const undo = useDocStore((s) => s.undo);
   const redo = useDocStore((s) => s.redo);
+  const [sigOpen, setSigOpen] = useState(false);
+  const tool = useActiveTool((s) => s.tool);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -33,10 +38,15 @@ export default function App() {
     return () => window.removeEventListener('keydown', onKey);
   }, [undo, redo]);
 
+  useEffect(() => {
+    if (tool === 'signature' && !hasPendingSignature()) setSigOpen(true);
+  }, [tool]);
+
   if (!bytes || !doc) return <EmptyState />;
   return (
     <div className="flex flex-col h-full">
       <Toolbar onExport={() => alert('export not yet wired')} />
+      {sigOpen && <SignatureModal onClose={() => setSigOpen(false)} onUse={(url) => setPendingSignature(url)} />}
       <div className="flex-1 overflow-auto flex flex-col gap-4 items-center p-4">
         {Array.from({ length: doc.numPages }).map((_, i) => (
           <PageView key={i} doc={doc} pageIndex={i} />
