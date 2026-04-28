@@ -1,5 +1,5 @@
 import { Stage, Layer } from 'react-konva';
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import type Konva from 'konva';
 import { useDocStore } from '../store/docStore';
 import { useActiveTool } from '../tools/useActiveTool';
@@ -19,11 +19,11 @@ declare global {
 }
 
 export function PageOverlay({ pageIndex, width, height }: Props) {
-  // NOTE: s.edits.filter(...) returns a new array every render — Zustand will re-render
-  // on every store change regardless of whether this page's edits changed. This is
-  // acceptable for correctness; memoization with useShallow or a selector can be added
-  // later if performance becomes an issue.
-  const edits = useDocStore((s) => s.edits.filter((e) => e.pageIndex === pageIndex));
+  const allEdits = useDocStore((s) => s.edits);
+  const edits = useMemo(
+    () => allEdits.filter((e) => e.pageIndex === pageIndex),
+    [allEdits, pageIndex],
+  );
   const tool = useActiveTool((s) => s.tool);
   const selectedId = useSelection((s) => s.id);
   const setSelectedId = useSelection((s) => s.setId);
