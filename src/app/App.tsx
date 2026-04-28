@@ -9,6 +9,7 @@ import { SignatureModal } from '../signature/SignatureModal';
 import { setPendingSignature, hasPendingSignature } from '../tools/handlers/signatureHandler';
 import { useActiveTool } from '../tools/useActiveTool';
 import { FormFieldOverlay } from '../forms/FormFieldOverlay';
+import { TextEditor } from '../overlay/TextEditor';
 import { exportPdf } from '../export/exportPdf';
 import { Sidebar } from '../ui/Sidebar';
 import { PropertiesPanel } from '../ui/PropertiesPanel';
@@ -21,6 +22,7 @@ function PageView({ doc, pageIndex }: { doc: LoadedPdf; pageIndex: number }) {
         onSize={(w, h) => setSize({ w, h })} />
       {size.w > 0 && <PageOverlay pageIndex={pageIndex} width={size.w} height={size.h} />}
       {size.w > 0 && <FormFieldOverlay pageIndex={pageIndex} scale={1.25} />}
+      {size.w > 0 && <TextEditor pageIndex={pageIndex} />}
     </div>
   );
 }
